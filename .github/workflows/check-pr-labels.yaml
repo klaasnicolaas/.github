@@ -13,4 +13,4 @@ permissions:
 jobs:
   validate:
     name: PR labels
-    uses: ./.github/workflows/pr-labels.yaml
+    uses: $/.github/workflows/pr-labels.yaml
