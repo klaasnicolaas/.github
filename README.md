@@ -2,6 +2,8 @@
 
 Shared configuration for repositories owned by `klaasnicolaas`.
 
+Python-package workflows remain fully local. This repository supplies shared configuration that their actions and tools can load; it does not replace package workflows with reusable callers.
+
 ## Community defaults
 
 Funding, generic issue forms and the pull request template live in `.github/`. GitHub uses these for repositories under `klaasnicolaas` when no local override exists. Add the issue-form labels (`bug`, `enhancement`, `new-feature`) to this repository and consumers before adoption.
