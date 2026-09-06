@@ -32,6 +32,12 @@ The initial targets are `python-gridnet` and `pypackage-template`. Add other rep
 
 For synchronization, add the `LABEL_SYNC_TOKEN` Actions secret here: a fine-grained token with Issues read/write access to every listed target repository. The built-in workflow token cannot update other repositories. Extend token access when adding a target. Previews can read labels from these public repositories without that secret.
 
+## PR-label validation
+
+`.github/workflows/pr-labels.yaml` is a reusable workflow with the shared release-label policy. A small local caller selects PR events and grants `contents: read` and `pull-requests: read`. Pin the shared workflow to a commit; Renovate maintains that reference. The action reads PR metadata, uses the caller's built-in token and posts no comments. No extra secret is needed.
+
+This repository calls the same workflow from `check-pr-labels.yaml`. Consumer checks appear as `PR labels / Verify`. Keep any repository-specific branch filters in the caller and check required status names when adopting it.
+
 ## Renovate
 
 Python packages retain only this `.github/renovate.json`, plus any repository-specific overrides:
