@@ -1,18 +1,32 @@
-# Shared Python configuration
+# GitHub defaults
 
-Central configuration for Klaas Nicolaas's Python packages. Each repository keeps its own workflows and explicitly selects these presets.
+Shared configuration for repositories owned by `klaasnicolaas`.
 
-| Configuration | Central file | Reference in package repository |
-| --- | --- | --- |
-| Release Drafter | `.github/release-drafter-python.yml` | `config-name: klaasnicolaas/.github:release-drafter-python.yml` |
-| Renovate | `renovate-python.json` | `extends: ["github>klaasnicolaas/.github:renovate-python"]` |
-| Label Blueprint | `labels/python.yml` | `labels-file: https://raw.githubusercontent.com/klaasnicolaas/.github/main/labels/python.yml` |
+## Release Drafter
 
-## Usage
+The default lives in `.github/release-drafter.yml`. Release Drafter automatically uses it when a repository under this owner has no local configuration. Keep the Release Drafter workflow in each repository; no `config-name` input is needed.
 
-Add the Release Drafter reference under the action's `with` inputs (v7.7.0 or newer). Remove the old local `.github/release-drafter.yml`.
+A repository can override the default with its own `.github/release-drafter.yml`, or extend it to override individual settings:
 
-Replace `.github/renovate.json` with:
+```yaml
+---
+_extends: klaasnicolaas/.github
+name-template: "service-v$RESOLVED_VERSION"
+```
+
+Repositories under a different owner use that owner's defaults. The shared configuration uses Release Drafter v7.7.0's current syntax.
+
+## Labels
+
+`labels/base.yml` is synchronized by `.github/workflows/sync-labels.yaml`. Pull requests preview changes using the read-only workflow token; merges to `main` apply them. Manual runs are also supported. Extra repository labels are preserved.
+
+The initial targets are `python-gridnet` and `pypackage-template`. Add other repositories to the workflow as they migrate, and remove their local label configuration and sync workflow.
+
+For synchronization, add the `LABEL_SYNC_TOKEN` Actions secret here: a fine-grained token with Issues read/write access to every listed target repository. The built-in workflow token cannot update other repositories. Extend token access when adding a target. Previews can read labels from these public repositories without that secret.
+
+## Renovate
+
+Python packages retain only this `.github/renovate.json`, plus any repository-specific overrides:
 
 ```json
 {
@@ -21,22 +35,10 @@ Replace `.github/renovate.json` with:
 }
 ```
 
-Repository-specific Renovate overrides can remain alongside `extends`.
-
-Set Label Blueprint's `labels-file` input to the URL above and remove the old local `.github/labels.yml`. Keep `issues: write`, a manual trigger, and a weekly schedule. Extra repository labels are preserved by default.
-
-All references follow `main`: changes apply on the next corresponding run. Review central changes with the consuming repositories in mind. Workflows, licenses, package metadata, and tests remain local.
+The shared preset lives in `renovate-python.json`; `.github/renovate.json` maintains this repository's own action dependencies. CI runs the official Renovate validator.
 
 ## Migration
 
-Gridnet and the package template are the first consumers. Exclude their central configuration and consuming workflows from the old `github-config` synchronization before merging their adoption PRs. Other repositories can migrate individually.
+Merge the legacy sync exclusions in [github-config #443](https://github.com/klaasnicolaas/github-config/pull/443) before the consumer changes in [Gridnet #1309](https://github.com/klaasnicolaas/python-gridnet/pull/1309) and [template #579](https://github.com/klaasnicolaas/pypackage-template/pull/579). Publish these central defaults and configure the label token before removing local consumer workflows.
 
-These are explicit Python presets; this repository does not define an account-wide Release Drafter fallback or community-health defaults. Other owners can choose their own policy.
-
-## Validation
-
-CI runs the official Renovate validator:
-
-```sh
-npx --yes --package=renovate@44.65.0 renovate-config-validator --strict renovate-python.json
-```
+New packages generated from the template need to be added to the central label target list. Other owners should configure their own central defaults and label synchronization. Workflows, licenses, tests and package metadata remain local.

@@ -23,4 +23,6 @@ jobs:
         with:
           node-version: "24"
       - name: Validate Renovate preset
-        run: npx --yes --package=renovate@44.65.0 renovate-config-validator --strict renovate-python.json
+        run: >-
+          npx --yes --package=renovate@44.65.0 renovate-config-validator
+          --strict renovate-python.json .github/renovate.json
