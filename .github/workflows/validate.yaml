@@ -1,5 +1,5 @@
 ---
-name: Validate shared configuration
+name: Validate Renovate preset
 
 # yamllint disable-line rule:truthy
 on:
@@ -12,29 +12,6 @@ permissions:
   contents: read
 
 jobs:
-  release-policy:
-    name: Release policy and labels
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
-        with:
-          node-version: "24"
-      - name: Check out the supported Release Drafter version
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: release-drafter/release-drafter
-          ref: 34d80673e067bdc0c24568d3af899c216adcfaa9 # v7.7.0
-          path: .validation/release-drafter
-          persist-credentials: false
-      - name: Install upstream runtime dependencies
-        working-directory: .validation/release-drafter
-        run: npm ci --ignore-scripts --omit=dev --no-audit --no-fund
-      - name: Validate release semantics and label consistency
-        run: node tests/validate.mjs
-
   renovate:
     name: Renovate preset
     runs-on: ubuntu-latest

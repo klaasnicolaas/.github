@@ -1,23 +1,18 @@
-# Shared GitHub configuration
+# Shared Python configuration
 
-Explicit presets for Klaas Nicolaas's Python packages. Repositories opt in through their own workflows and Renovate configuration.
+Central configuration for Klaas Nicolaas's Python packages. Each repository keeps its own workflows and explicitly selects these presets.
 
-| Policy | Central file | Consumer |
+| Configuration | Central file | Reference in package repository |
 | --- | --- | --- |
-| Releases | `.github/release-drafter-python.yml` | Release Drafter `config-name` |
-| Dependencies | `renovate-python.json` | Renovate `extends` |
-| Labels | `labels/python.yml` | Label Blueprint `labels-file` |
+| Release Drafter | `.github/release-drafter-python.yml` | `config-name: klaasnicolaas/.github:release-drafter-python.yml` |
+| Renovate | `renovate-python.json` | `extends: ["github>klaasnicolaas/.github:renovate-python"]` |
+| Label Blueprint | `labels/python.yml` | `labels-file: https://raw.githubusercontent.com/klaasnicolaas/.github/main/labels/python.yml` |
 
-## Adopt in a Python package
+## Usage
 
-In `.github/workflows/release-drafter.yaml`, add the following input to Release Drafter v7.7.0 or newer and remove the redundant local `.github/release-drafter.yml`:
+Add the Release Drafter reference under the action's `with` inputs (v7.7.0 or newer). Remove the old local `.github/release-drafter.yml`.
 
-```yaml
-with:
-  config-name: klaasnicolaas/.github:release-drafter-python.yml
-```
-
-Use this `.github/renovate.json`:
+Replace `.github/renovate.json` with:
 
 ```json
 {
@@ -26,36 +21,22 @@ Use this `.github/renovate.json`:
 }
 ```
 
-Repository-specific overrides can remain alongside `extends`. The preset supports Poetry and PEP 621 projects, pins development dependencies and action digests, and preserves minor/patch dependency automerge and lock-file maintenance. Repository branch protections and CI should govern merge eligibility.
+Repository-specific Renovate overrides can remain alongside `extends`.
 
-In `.github/workflows/sync-labels.yaml`, use Label Blueprint with:
+Set Label Blueprint's `labels-file` input to the URL above and remove the old local `.github/labels.yml`. Keep `issues: write`, a manual trigger, and a weekly schedule. Extra repository labels are preserved by default.
 
-```yaml
-with:
-  labels-file: https://raw.githubusercontent.com/klaasnicolaas/.github/main/labels/python.yml
-```
+All references follow `main`: changes apply on the next corresponding run. Review central changes with the consuming repositories in mind. Workflows, licenses, package metadata, and tests remain local.
 
-The workflow needs `issues: write`. Retain a manual trigger and add a weekly schedule so central label changes propagate without a local commit. Remove the redundant `.github/labels.yml`. Label Blueprint's default `prune: false` preserves extra repository labels.
+## Migration
 
-These references follow the central default branch (`main`): release and dependency changes take effect on the next corresponding run, and labels on the next scheduled or manual sync. Review changes here with all consumers in mind. A repository can temporarily pin a Release Drafter configuration with `@<ref>` or a Renovate preset with `#<ref>`; the label URL can use a commit instead of `main`.
+Gridnet and the package template are the first consumers. Exclude their central configuration and consuming workflows from the old `github-config` synchronization before merging their adoption PRs. Other repositories can migrate individually.
 
-## Release policy
-
-The configuration uses Release Drafter's current `when` and `semver-increment` syntax. Breaking changes and explicit `major` labels increment major; new features and explicit `minor` labels increment minor; otherwise the increment is patch. PRs carrying `sync` are excluded from release notes and version calculation. Existing categories and dependency collapsing are preserved.
-
-## Migration and ownership
-
-Start with `python-gridnet` and `pypackage-template`. Before merging their adoption PRs, exclude these central files and their consuming workflows from legacy `github-config` synchronization. Other repositories keep their existing configuration until migrated individually.
-
-Workflows, package metadata, tests, and licenses remain in each repository. This repository currently defines no account-wide community-health defaults and no implicit `release-drafter.yml` fallback. Product repositories and projects under other owners can choose a separate policy.
+These are explicit Python presets; this repository does not define an account-wide Release Drafter fallback or community-health defaults. Other owners can choose their own policy.
 
 ## Validation
 
-CI validates the Renovate preset with the official strict validator and exercises release categories, version increments, sync exclusions, and label consistency using Release Drafter v7.7.0's own implementation. To run the release checks locally, clone that version, install its runtime dependencies with `npm ci --ignore-scripts --omit=dev`, and run with Node.js 24:
+CI runs the official Renovate validator:
 
 ```sh
-RELEASE_DRAFTER_SOURCE=/path/to/release-drafter node tests/validate.mjs
 npx --yes --package=renovate@44.65.0 renovate-config-validator --strict renovate-python.json
 ```
-
-References: [Release Drafter configuration loading](https://github.com/release-drafter/release-drafter/blob/v7.7.0/docs/configuration-loading.md), [Renovate shared presets](https://docs.renovatebot.com/config-presets/), [Label Blueprint](https://github.com/klaasnicolaas/action-label-blueprint).
