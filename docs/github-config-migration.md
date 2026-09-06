@@ -8,7 +8,7 @@ The inventory covers all **32 tracked files** and every active mapping in [githu
 
 Counts below describe configured copies, not verified equality with every destination's current contents. The template can receive the same source in its own configuration and in generated-package files. Repository-specific differences must be checked before removing local copies.
 
-Current rollout: [central defaults #1](https://github.com/klaasnicolaas/.github/pull/1), [sync exclusions #443](https://github.com/klaasnicolaas/github-config/pull/443), and [template #579](https://github.com/klaasnicolaas/pypackage-template/pull/579) are merged. [Gridnet #1309](https://github.com/klaasnicolaas/python-gridnet/pull/1309) remains open. Central labels have successfully synchronized Gridnet and the template; the remaining packages are not enrolled yet.
+Current rollout: [central defaults #1](https://github.com/klaasnicolaas/.github/pull/1), [sync exclusions #443](https://github.com/klaasnicolaas/github-config/pull/443), and [template #579](https://github.com/klaasnicolaas/pypackage-template/pull/579) are merged. [Gridnet #1309](https://github.com/klaasnicolaas/python-gridnet/pull/1309) is merged and its default-branch Release Drafter run successfully loaded the central policy. Central labels have successfully synchronized Gridnet and the template; the remaining packages are not enrolled yet.
 
 ## Shared-source decisions
 
@@ -69,7 +69,7 @@ The PR-label workflow only reads metadata. Its migration should not add PR code 
 
 ## Migration order and completion checks
 
-1. **Finish the existing pilot.** Merge Gridnet #1309 and verify its default-branch release workflow loads the central policy. Central labels and the template migration are already in place.
+1. **Initial pilot completed.** Gridnet #1309 is merged and its default-branch Release Drafter run succeeded. Central labels and the template migration are in place.
 2. **Move community defaults.** Publish funding and generic issue/PR templates here. Create their required labels in this repository as well as the pilot. Remove the corresponding sync mappings before deleting redundant local files in the pilot/template. Check the issue chooser, PR form and sponsor link in GitHub, including one repository with a deliberate local override.
 3. **Centralize PR-label validation.** Add one reusable workflow and pilot its local caller. Exercise label changes and preserve the required status check. Then remove the old sync mapping and roll out.
 4. **Centralize stale and lock.** Add two reusable workflows with small local callers and explicit policy inputs. Compare effective inputs to current behavior before the next scheduled runs. Replace legacy mappings as callers migrate.
@@ -77,3 +77,10 @@ The PR-label workflow only reads metadata. Its migration should not add PR code 
 6. **Retire github-config.** Confirm no active mappings or external references remain, close or supersede old sync PRs, remove unused secrets, disable the sync workflow, document replacement locations, and archive the repository. Retain history and license.
 
 For each batch, publish the replacement first, protect consumers from legacy sync, migrate local files/callers, and verify behavior before marking maintenance work complete. A copied or inherited file alone is not proof that the relevant workflow or UI uses it.
+
+
+## Community-default pilot
+
+Funding and generic issue/PR templates are proposed as account defaults. Gridnet can remove identical funding and PR files but retains its local issue folder to preserve its Discussions contact link. Glow can remove identical funding while retaining hardware-specific issue/PR forms. The template repository keeps its GitHub-only funding override; generated personal packages default to inherited community files, with an explicit local-mode option for custom forms or funding. Other owners default to local mode.
+
+The legacy sync exclusions cover only the migrated paths. Generic issue sources remain available for existing Gridnet/local overrides; the template owns its optional local copies. Required issue-form labels have been checked in the central repository and all three pilot consumers. Verify inherited GitHub UI behavior after the central and consumer PRs merge.
