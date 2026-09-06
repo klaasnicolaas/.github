@@ -30,7 +30,7 @@ Repositories under a different owner use that owner's defaults. The shared confi
 
 `labels/base.yml` is synchronized by `.github/workflows/sync-labels.yaml`. Pull requests preview changes using the read-only workflow token; merges to `main` apply them. Manual runs are also supported. Extra repository labels are preserved.
 
-The initial targets are `python-gridnet` and `pypackage-template`. Add other repositories to the workflow as they migrate, and remove their local label configuration and sync workflow.
+The target list covers all 27 active personal Python packages, the package template, Home Assistant Glow, github-config and this repository. New repositories must be added to the list and token access before removing their local label sync. Retired packages and repositories under other owners are excluded.
 
 For synchronization, add the `LABEL_SYNC_TOKEN` Actions secret here: a fine-grained token with Issues read/write access to every listed target repository. The built-in workflow token cannot update other repositories. Extend token access when adding a target. Previews can read labels from these public repositories without that secret.
 
@@ -45,7 +45,7 @@ Python packages retain only this `.github/renovate.json`, plus any repository-sp
 }
 ```
 
-The shared preset lives in `renovate-python.json`; `.github/renovate.json` maintains this repository's own action dependencies. CI runs the official Renovate validator.
+`renovate-base.json` contains common scheduling, dashboard and GitHub Actions policy. `renovate-python.json` extends it with Python dependency rules. Glow extends the base and keeps its npm-specific rule locally; github-config keeps its custom manager paths. The Python preset remains backward-compatible for existing consumers; `.github/renovate.json` maintains this repository's own action dependencies. CI runs the official Renovate validator.
 
 ## Migration
 
