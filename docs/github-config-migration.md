@@ -23,10 +23,10 @@ Paths in the first column are relative to `github-config`. Counts are destinatio
 | `github/labels.yml` | 29 / 29 | Already replaced centrally by `labels/base.yml`. Enroll remaining repositories, extend token access and remove local copies. |
 | `github/release-drafter.yml` | 28 / 28 | Already replaced by the current `.github/release-drafter.yml` here. Remove local configs after checking overrides and action compatibility. |
 | `github/workflows/sync-labels.yaml` | 28 / 28 | Remove per-repository workflows after enrolling targets in the central sync. No reusable caller is needed for labels. |
-| `github/workflows/pr-labels.yaml` | 31 / 30 | First reusable-workflow candidate: `.github/workflows/pr-labels.yaml` with `workflow_call`. The source already supports that trigger. Keep a small local PR-event caller. |
-| `github/workflows/stale.yaml` | 31 / 30 | Reusable workflow with local schedule/manual caller and repository token. Preserve current 30-day stale / 7-day close policy initially, with explicit inputs for exceptions. |
-| `github/workflows/lock.yaml` | 31 / 30 | Reusable workflow with local schedule/manual caller. Preserve the current 30-day closed-issue / 1-day closed-PR inactivity thresholds initially. |
-| `github/workflows/release-drafter.yaml` | 28 / 28 | Keep the small workflow in the package template for now; its policy is already central. A reusable wrapper adds little value at this stage. |
+| `github/workflows/pr-labels.yaml` | 31 / 30 | Keep the full workflow local. The action currently accepts the label list as an input, not a shared config file; retain that input locally unless the action gains config-file/URL support. |
+| `github/workflows/stale.yaml` | 31 / 30 | Keep the full workflow and schedules local. Extract shared policy only if the action supports a separate config; keep its current input-based configuration local for now. |
+| `github/workflows/lock.yaml` | 31 / 30 | Keep the full workflow local, including the 30-day closed-issue / 1-day closed-PR thresholds. Centralize only a supported shared config, not the job implementation. |
+| `github/workflows/release-drafter.yaml` | 28 / 28 | Keep the full workflow in each package; its policy is already loaded from the central release-drafter.yml. |
 | `python_package/renovate.json` | 26 / 26 | Replace with the existing `renovate-python.json` preset here and small local `extends` files. Preserve overrides. |
 | `python_package/.devcontainer/devcontainer.json` | 28 / 28 | Maintain through pypackage-template; each package needs a local file. Reconcile old tooling settings before retiring this source. |
 | `python_package/.gitignore` | 29 / 28 | Maintain through pypackage-template; retain local project-specific exclusions. |
@@ -54,15 +54,17 @@ GitHub account defaults apply to repositories with the same owner, including pri
 
 Ownership is decided: `NIPKaart/disabled-parking` and `NIPKaart/offstreet-parking` migrate to **NIPKaart/.github** for their central defaults and automation. Retire their legacy mappings after that owner-specific replacement is ready.
 
-**Home Assistant Glow participates in klaasnicolaas/.github** alongside the other personal repositories: shared community defaults, central labels, and applicable release/triage workflows. Its current legacy mappings cover only funding and labels, but that is a description of the old setup, not a restriction on migration. Enroll Glow in the central label targets and token access during rollout. Keep project-specific tooling local; select Renovate rules appropriate to Glow rather than assuming every personal repository is a Python package.
+**Home Assistant Glow participates in klaasnicolaas/.github** alongside the other personal repositories: shared community defaults, central label configuration, and applicable release/triage configuration. Its workflow implementations remain local. Its current legacy mappings cover only funding and labels, but that is a description of the old setup, not a restriction on migration. Enroll Glow in the central label targets and token access during rollout. Keep project-specific tooling local; select Renovate rules appropriate to Glow rather than assuming every personal repository is a Python package.
 
-Reusable workflows require local callers; putting an ordinary workflow here does not make it run in other repositories. Keep events and schedules local, grant only the caller permissions needed by each job, and pin shared workflow references to commits maintained by Renovate. Preserve required check names or update branch protection when moving PR validation. [GitHub reusable-workflow documentation](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows)
+Workflows stay in each Python-package repository: complete jobs, triggers, permissions and action versions. The package template maintains their baseline. `.github` supplies common configuration where the consuming tool can load it, such as Release Drafter and Renovate. Do not replace local workflows with reusable workflow callers or introduce custom download scripts just to move small action inputs out of YAML.
 
-The PR-label workflow only reads metadata. Its migration should not add PR code checkout or execution. Stale/lock can use each caller's repository token; a new account-wide write token is unnecessary for those workflows.
+Central label synchronization remains the explicitly agreed exception: one workflow here manages the enrolled repositories using the shared label blueprint.
+
+The attempted reusable PR-label migration was canceled and PR #5 closed. Local PR-label workflows and legacy sync mappings were restored. PR-label, stale and lock policy is currently expressed as action inputs; a shared-file interface would be a separate action enhancement, not a reason to relocate the workflows.
 
 ## Existing divergence to resolve
 
-- The template's PR-label workflow pins action v2.1.2, whereas the legacy source uses v3.1.1. Choose and validate the shared version, rather than copying either file without review.
+- The template's PR-label workflow pins action v2.1.2, whereas the legacy source uses v3.1.1. Reconcile the local action versions through normal template maintenance.
 - The legacy devcontainer installs a pre-commit feature but runs `poetry run prek install`, and still contains mypy/older Python-extension settings. Reconcile it with the current template and intended ty/prek tooling before rollout.
 - The legacy Renovate source has custom GitHub Actions version extraction/regex rules. The published Python preset uses built-in version handling and digest pinning instead; migration should keep that newer behavior.
 - `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `SUPPORT.md`, and issue-template `config.yml` do not exist among the export sources. They are future additions, not files already waiting to be moved. Draft account-wide content separately; package-specific security/support details may stay local.
@@ -71,12 +73,12 @@ The PR-label workflow only reads metadata. Its migration should not add PR code 
 
 1. **Initial pilot completed.** Gridnet #1309 is merged and its default-branch Release Drafter run succeeded. Central labels and the template migration are in place.
 2. **Move community defaults.** Publish funding and generic issue/PR templates here. Create their required labels in this repository as well as the pilot. Remove the corresponding sync mappings before deleting redundant local files in the pilot/template. Check the issue chooser, PR form and sponsor link in GitHub, including one repository with a deliberate local override.
-3. **Centralize PR-label validation.** Add one reusable workflow and pilot its local caller. Exercise label changes and preserve the required status check. Then remove the old sync mapping and roll out.
-4. **Centralize stale and lock.** Add two reusable workflows with small local callers and explicit policy inputs. Compare effective inputs to current behavior before the next scheduled runs. Replace legacy mappings as callers migrate.
+3. **Keep workflow implementations local.** Maintain PR-label, stale, lock, release and CI workflows through the package template. Preserve triggers, permissions and required status names. Do not migrate them to reusable workflows.
+4. **Centralize supported configuration.** Use shared config files for identical package policy when the consuming action/tool supports them. Keep small action-input policies local until a suitable config interface exists; validate repository-specific overrides before adoption.
 5. **Roll out and retire template-owned sources.** Migrate remaining packages in batches; enroll label targets and token access together, preserve overrides, and use Copier updates for local tooling files. Verify existing Copier answers/version tracking before expecting automated updates; adopt legacy packages individually where needed. Include Glow in the personal-account rollout. Coordinate the NIPKaart handover to NIPKaart/.github independently.
 6. **Retire github-config.** Confirm no active mappings or external references remain, close or supersede old sync PRs, remove unused secrets, disable the sync workflow, document replacement locations, and archive the repository. Retain history and license.
 
-For each batch, publish the replacement first, protect consumers from legacy sync, migrate local files/callers, and verify behavior before marking maintenance work complete. A copied or inherited file alone is not proof that the relevant workflow or UI uses it.
+For each batch, publish the replacement first, protect consumers from legacy sync, migrate configuration references, and verify behavior before marking maintenance work complete. A copied or inherited file alone is not proof that the relevant workflow or UI uses it.
 
 
 ## Community-default pilot
