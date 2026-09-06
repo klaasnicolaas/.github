@@ -42,3 +42,5 @@ The shared preset lives in `renovate-python.json`; `.github/renovate.json` maint
 Merge the legacy sync exclusions in [github-config #443](https://github.com/klaasnicolaas/github-config/pull/443) before the consumer changes in [Gridnet #1309](https://github.com/klaasnicolaas/python-gridnet/pull/1309) and [template #579](https://github.com/klaasnicolaas/pypackage-template/pull/579). Publish these central defaults and configure the label token before removing local consumer workflows.
 
 New packages generated from the template need to be added to the central label target list. Other owners should configure their own central defaults and label synchronization. Workflows, licenses, tests and package metadata remain local.
+
+For the remaining legacy files, see the [github-config inventory and migration plan](docs/github-config-migration.md).
