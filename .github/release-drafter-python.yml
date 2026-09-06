@@ -1,0 +1,56 @@
+---
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+change-template: "- #$NUMBER $TITLE @$AUTHOR"
+sort-direction: ascending
+
+categories:
+  - type: pre-exclude
+    when:
+      label: sync
+
+  - title: "🚨 Breaking changes"
+    semver-increment: major
+    when:
+      label: breaking-change
+  - title: "✨ New features"
+    semver-increment: minor
+    when:
+      label: new-feature
+  - title: "🐛 Bug fixes"
+    when:
+      label: bugfix
+  - title: "🚀 Enhancements"
+    when:
+      labels: [enhancement, refactor, performance]
+  - title: "🧰 Maintenance"
+    when:
+      labels: [maintenance, ci]
+  - title: "📚 Documentation"
+    when:
+      label: documentation
+  - title: "⬆️ Dependency updates"
+    collapse-after: 5
+    when:
+      label: dependencies
+
+  # Explicit version labels also work without a changelog-category label.
+  - type: version-resolver
+    semver-increment: major
+    when:
+      label: major
+  - type: version-resolver
+    semver-increment: minor
+    when:
+      label: minor
+  - type: version-resolver
+    semver-increment: patch
+
+template: |
+  ## What's changed
+
+  _To receive a notification on new releases, click on **Watch** > **Custom** > **Releases** on the top._
+
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
