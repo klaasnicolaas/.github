@@ -2,6 +2,14 @@
 
 Shared configuration for repositories owned by `klaasnicolaas`.
 
+## Community defaults
+
+Funding, generic issue forms and the pull request template live in `.github/`. GitHub uses these for repositories under `klaasnicolaas` when no local override exists. Add the issue-form labels (`bug`, `enhancement`, `new-feature`) to this repository and consumers before adoption.
+
+Keep local files for intentional differences. In particular, an existing `ISSUE_TEMPLATE/config.yml` or valid issue form disables inheritance of the whole issue-template folder. Gridnet retains its Discussions link and local forms; Glow retains its hardware-specific issue and PR templates. Their identical funding files can be removed.
+
+New personal packages use the account defaults through the package template's community-defaults option. Other owners can keep generated local templates and funding choices or opt into their own account defaults.
+
 ## Release Drafter
 
 The default lives in `.github/release-drafter.yml`. Release Drafter automatically uses it when a repository under this owner has no local configuration. Keep the Release Drafter workflow in each repository; no `config-name` input is needed.
@@ -39,7 +47,7 @@ The shared preset lives in `renovate-python.json`; `.github/renovate.json` maint
 
 ## Migration
 
-Merge the legacy sync exclusions in [github-config #443](https://github.com/klaasnicolaas/github-config/pull/443) before the consumer changes in [Gridnet #1309](https://github.com/klaasnicolaas/python-gridnet/pull/1309) and [template #579](https://github.com/klaasnicolaas/pypackage-template/pull/579). Publish these central defaults and configure the label token before removing local consumer workflows.
+The initial release/label pilot is merged: central defaults #1, github-config #443, Gridnet #1309 and template #579. Gridnet has successfully loaded the central Release Drafter policy. Community-default adoption follows the same order: publish defaults, exclude legacy sync paths, then remove redundant consumer files.
 
 New packages generated from the template need to be added to the central label target list. Other owners should configure their own central defaults and label synchronization. Workflows, licenses, tests and package metadata remain local.
 
