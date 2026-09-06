@@ -2,7 +2,7 @@
 
 Shared configuration for repositories owned by `klaasnicolaas`.
 
-Python-package workflows remain fully local. This repository supplies shared configuration that their actions and tools can load; it does not replace package workflows with reusable callers.
+Python-package workflows remain fully local. This repository supplies shared configuration that their actions and tools can load; it does not replace package workflows with reusable callers. Central label synchronization is the agreed exception and remains here.
 
 ## Community defaults
 

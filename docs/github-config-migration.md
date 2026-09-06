@@ -58,6 +58,8 @@ Ownership is decided: `NIPKaart/disabled-parking` and `NIPKaart/offstreet-parkin
 
 Workflows stay in each Python-package repository: complete jobs, triggers, permissions and action versions. The package template maintains their baseline. `.github` supplies common configuration where the consuming tool can load it, such as Release Drafter and Renovate. Do not replace local workflows with reusable workflow callers or introduce custom download scripts just to move small action inputs out of YAML.
 
+Central label synchronization remains the explicitly agreed exception: one workflow here manages the enrolled repositories using the shared label blueprint.
+
 The attempted reusable PR-label migration was canceled and PR #5 closed. Local PR-label workflows and legacy sync mappings were restored. PR-label, stale and lock policy is currently expressed as action inputs; a shared-file interface would be a separate action enhancement, not a reason to relocate the workflows.
 
 ## Existing divergence to resolve
