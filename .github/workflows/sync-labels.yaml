@@ -1,0 +1,43 @@
+---
+name: Sync labels
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+    paths:
+      - .github/workflows/sync-labels.yaml
+      - labels/**
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/sync-labels.yaml
+      - labels/**
+  workflow_dispatch:
+
+concurrency:
+  group: sync-labels-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  labels:
+    name: Preview or synchronize labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Apply label blueprint
+        uses: klaasnicolaas/action-label-blueprint@90f2ea1ff380df2e6c1c83f39797998f54cc97ab # v1.1.0
+        with:
+          # Public label previews only need the read-only workflow token.
+          github-token: ${{ github.event_name == 'pull_request' && github.token || secrets.LABEL_SYNC_TOKEN }}
+          labels-file: labels/base.yml
+          repositories: |
+            klaasnicolaas/python-gridnet
+            klaasnicolaas/pypackage-template
+          mode: ${{ github.event_name == 'pull_request' && 'preview' || 'sync' }}
+          prune: false
