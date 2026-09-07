@@ -43,7 +43,9 @@ To convert an existing project draft without adding another card, supply its nod
 
 Check the resulting epic's sub-issue list, project counts and destination URLs after applying. Publishing issues can trigger repository issue automations. Implementation remains a separate step; issue creation does not migrate package code.
 
-Tests:
+The `Maintenance tooling` CI job runs these tests on every pull request and push to main. GitHub operations are mocked; the tests do not create issues or require a token.
+
+Run the same tests locally:
 
 ```sh
 python -m unittest discover -s scripts/tests -v
