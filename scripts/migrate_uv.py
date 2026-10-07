@@ -53,6 +53,7 @@ def migrate_project(text):
     dynamic = data['project'].get('dynamic', [])
     if dynamic and (dynamic != ['dependencies'] or not data['project'].get('dependencies')):
         raise ValueError('Dynamic metadata requires manual review')
+    text = re.sub(r'email\s*=\s*"<([^">]+)>"', r'email="\1"', text)
     text = re.sub(r'(?m)^dynamic = \["dependencies"\]\n', '', text)
     text = re.sub(r'(?ms)^\[tool\.poetry(?:\.[^\]]+)?\]\n.*?(?=^\[|\Z)', '', text)
     lines = ['[dependency-groups]', 'dev = [']

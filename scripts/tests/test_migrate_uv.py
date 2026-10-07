@@ -42,6 +42,10 @@ class MigrateUvTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Runtime Poetry dependencies'):
             migrate_uv.migrate_project(text)
 
+    def test_author_email_is_valid_after_backend_change(self):
+        text = PROJECT.replace('version = "0.0.0"', 'version = "0.0.0"\nauthors = [{name = "Owner", email = "<owner@example.com>"}]')
+        self.assertIn('email="owner@example.com"', migrate_uv.migrate_project(text))
+
     def test_caret_constraint_preserves_its_upper_bound(self):
         self.assertEqual(migrate_uv.requirement('types-pytz', '^2023.3.0.0'), 'types-pytz>=2023.3.0.0,<2024.0.0.0')
         self.assertEqual(migrate_uv.requirement('sample', '^0.0.3'), 'sample>=0.0.3,<0.0.4')
