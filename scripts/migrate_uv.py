@@ -76,7 +76,7 @@ def migrate_workflow(text):
         content = match.group()
         python = '${{ matrix.python }}' if '${{ matrix.python }}' in content else '${{ env.DEFAULT_PYTHON }}'
         release = 'poetry version' in text
-        setup = f'      - name: 🏗 Set up uv\n        uses: {SETUP_UV}\n        with:\n          enable-cache: {"false" if release else "true"}\n          python-version: {python}\n'
+        setup = f'      - name: 🏗 Set up uv\n        uses: {SETUP_UV}\n        with:\n          enable-cache: {"false" if release else "true"}\n          python-version: {python}\n      - name: 🐍 Install Python\n        run: uv python install\n'
         return setup if release else setup + '      - name: 🏗 Install dependencies\n        run: uv sync --locked\n'
     text, count = re.subn(pattern, replace, text, flags=re.S)
     if count == 0 and 'poetry' in text.lower():

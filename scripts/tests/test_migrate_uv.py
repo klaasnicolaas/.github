@@ -37,6 +37,12 @@ class MigrateUvTest(unittest.TestCase):
         self.assertNotIn('poetry', result['tool'])
         self.assertEqual(result['build-system']['build-backend'], 'uv_build')
 
+    def test_workflows_install_requested_python_before_sync(self):
+        source = "      - name: 🏗 Set up Poetry\n        uses: example/setup\n        with:\n          python-version: ${{ matrix.python }}\n      - name: 🏗 Install dependencies\n        run: poetry install --no-interaction\n"
+        result = migrate_uv.migrate_workflow(source)
+        self.assertIn('python-version: ${{ matrix.python }}', result)
+        self.assertLess(result.index('run: uv python install'), result.index('run: uv sync --locked'))
+
     def test_unknown_poetry_runtime_dependencies_are_rejected(self):
         text = PROJECT.replace('python = "^3.12"', 'python = "^3.12"\ncustom = "^1.0"')
         with self.assertRaisesRegex(ValueError, 'Runtime Poetry dependencies'):
